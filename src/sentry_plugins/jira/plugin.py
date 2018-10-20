@@ -19,6 +19,7 @@ from sentry_plugins.utils import get_secret_field_config
 # A list of common builtin custom field types for JIRA for easy reference.
 JIRA_CUSTOM_FIELD_TYPES = {
     'select': 'com.atlassian.jira.plugin.system.customfieldtypes:select',
+    'version': 'com.atlassian.jira.plugin.system.customfieldtypes:version',
     'textarea': 'com.atlassian.jira.plugin.system.customfieldtypes:textarea',
     'multiuserpicker': 'com.atlassian.jira.plugin.system.customfieldtypes:multiuserpicker',
     'tempo_account': 'com.tempoplugin.tempo-accounts:accounts.customfield'
@@ -81,7 +82,10 @@ class JiraPlugin(CorePluginMixin, IssuePlugin2):
         }
         # override defaults based on field configuration
         if (schema['type'] in ['securitylevel', 'priority']
-                or schema.get('custom') == JIRA_CUSTOM_FIELD_TYPES['select']):
+                or schema.get('custom') in [
+                    JIRA_CUSTOM_FIELD_TYPES['select'], JIRA_CUSTOM_FIELD_TYPES['version']
+                ]
+        ):
             fieldtype = 'select'
             fkwargs['choices'] = self.make_choices(field_meta.get('allowedValues'))
         elif field_meta.get('autoCompleteUrl') and \
